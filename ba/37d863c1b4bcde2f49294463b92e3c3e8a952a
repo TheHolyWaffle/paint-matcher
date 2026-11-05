@@ -1,0 +1,18 @@
+web/app.js
+  h_38dce444bbb4ac 413,416-421,423-428,626,676,898-899,906-907,914,998,1023-1024,1030,1042,1050-1069
+web/index.html
+  h_38dce444bbb4ac 5-6,75-79,200-205
+web/style.css
+  h_38dce444bbb4ac 414-472
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ba37d863c1b4bcde2f49294463b92e3c3e8a952a",
+  "prompts": {},
+  "humans": {
+    "h_38dce444bbb4ac": {
+      "author": "bert.degeyter <bert.degeyter@showpad.com>"
+    }
+  }
+}
