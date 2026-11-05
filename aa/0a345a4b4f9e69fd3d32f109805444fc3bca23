@@ -1,0 +1,42 @@
+.github/workflows/pages.yml
+  h_38dce444bbb4ac 1-30
+.gitignore
+  h_38dce444bbb4ac 1-5
+data/boss.json
+  h_38dce444bbb4ac 1-387337
+data/boss_products.json
+  h_38dce444bbb4ac 1-457
+data/levis.json
+  h_38dce444bbb4ac 1-25430
+scripts/build_data.py
+  h_38dce444bbb4ac 1-86
+scripts/fetch_boss.py
+  h_38dce444bbb4ac 1-205
+scripts/fetch_levis.py
+  h_38dce444bbb4ac 1-81
+scripts/update.sh
+  h_38dce444bbb4ac 1-7
+web/app.js
+  h_38dce444bbb4ac 1-1046
+web/color.js
+  h_38dce444bbb4ac 1-106
+web/colors.js
+  h_38dce444bbb4ac 1
+web/harmony.js
+  h_38dce444bbb4ac 1-103
+web/index.html
+  h_38dce444bbb4ac 1-199
+web/style.css
+  h_38dce444bbb4ac 1-413
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "aa0a345a4b4f9e69fd3d32f109805444fc3bca23",
+  "prompts": {},
+  "humans": {
+    "h_38dce444bbb4ac": {
+      "author": "bert.degeyter <bert.degeyter@showpad.com>"
+    }
+  }
+}
