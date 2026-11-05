@@ -410,11 +410,22 @@
     cursor = p;
     drawLoupe(p, e.clientX, e.clientY);
   });
-  view.addEventListener('pointerleave', () => loupe.classList.remove('on'));
+  view.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') loupe.classList.remove('on'); });
   view.addEventListener('pointerdown', e => {
     const p = toSource(e);
-    if (p) { e.preventDefault(); pick(p); }
+    if (!p) return;
+    e.preventDefault();
+    if (e.pointerType === 'mouse') { pick(p); return; }
+    try { view.setPointerCapture(e.pointerId); } catch { /* pointer already released */ }
+    cursor = p;
+    drawLoupe(p, e.clientX, e.clientY);
   });
+  view.addEventListener('pointerup', e => {
+    if (e.pointerType === 'mouse') return;
+    loupe.classList.remove('on');
+    if (cursor) pick(cursor);
+  });
+  view.addEventListener('pointercancel', () => loupe.classList.remove('on'));
 
   stage.addEventListener('keydown', e => {
     if (!image || !cursor) return;
@@ -612,6 +623,7 @@
   function renderCompare() {
     const paints = compared.map(k => byKey.get(k));
     $('compare-empty').hidden = paints.length > 0;
+    $('tab-compare-count').textContent = paints.length || '';
     $('compare-clear').hidden = paints.length === 0;
     $('compare-add-target').hidden = !target;
 
@@ -661,7 +673,7 @@
       use.type = 'button';
       use.className = 'link';
       use.textContent = 'Match this color';
-      use.addEventListener('click', () => usePaint(p));
+      use.addEventListener('click', () => { usePaint(p); if (document.body.dataset.view === 'compare') { showView('match'); window.scrollTo(0, 0); } });
       body.append(use);
       if (target) {
         const inPalette = paletteKeys().includes(p.key);
@@ -883,21 +895,23 @@
       const shape = n === 1 ? svgEl('circle', { cx: C, cy: C, r: R }) : svgEl('path');
       shape.setAttribute('fill', p.c.hex);
       shape.append(svgEl('title', {}, `${i + 1}. ${BRAND_LABEL[p.brand]} ${p.label} ${p.c.hex}`));
-      shape.addEventListener('pointerenter', () => focusSlice(i));
+      shape.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') focusSlice(i); });
+      shape.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') focusSlice(ring.focus === i ? -1 : i); });
       const label = svgEl('g', { class: 'slice-label' });
       svg.append(shape);
       return { p, shape, label };
     });
     svg.append(...slices.map(s => s.label));
     const disc = svgEl('circle', { cx: C, cy: C, r: n ? r : R - 20, fill: target.hex });
-    disc.addEventListener('pointerenter', () => focusSlice(-1));
+    disc.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') focusSlice(-1); });
+    disc.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') focusSlice(-1); });
     svg.append(disc);
     const ink = inkFor(target.hex);
     const name = target.paint ? byKey.get(target.paint)?.label : null;
     svg.append(ringText(['Your color'], C, C - 30, { size: 13, weight: 600, fill: ink }));
     svg.append(ringText(wrapWords(name || target.hex, 14), C, C + 2, { size: 18, fill: ink }));
     svg.append(ringText([`${name ? target.hex + ' · ' : ''}LRV ${lrv(target.hex)}`], C, C + 34, { size: 12, weight: 500, fill: ink }));
-    svg.onpointerleave = () => focusSlice(-1);
+    svg.onpointerleave = e => { if (e.pointerType === 'mouse') focusSlice(-1); };
 
     ring = { slices, focus: -1, cur: ringLayout(n, -1), raf: 0 };
     setLabels();
@@ -981,6 +995,7 @@
   function renderBoard() {
     const paints = paletteKeys().map(k => byKey.get(k));
     $('board-clear').hidden = paints.length === 0;
+    $('tab-pairings-count').textContent = paints.length || '';
     $('board-hint').hidden = paints.length > 0;
     const base = lrv(target.hex);
     $('board-legend').replaceChildren(...paints.map((p, i) => {
@@ -1005,13 +1020,14 @@
         iconButton('×', `Remove ${p.label} from palette`, () => togglePalette(p.key)),
       );
       li.append(num, sw, text, tools);
-      li.addEventListener('pointerenter', () => focusSlice(i));
+      li.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') focusSlice(i); });
+      li.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse' && !e.target.closest('button, a')) focusSlice(ring.focus === i ? -1 : i); });
       return li;
     }));
     renderRing(paints);
   }
 
-  $('board-legend').addEventListener('pointerleave', () => focusSlice(-1));
+  $('board-legend').addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') focusSlice(-1); });
 
   paintCombo({
     input: $('board-search'),
@@ -1023,13 +1039,33 @@
   function renderPairings() {
     $('pairings-empty').hidden = !!target;
     $('board-wrap').hidden = !target;
-    if (!target) { $('schemes').replaceChildren(); return; }
+    if (!target) { $('schemes').replaceChildren(); $('tab-pairings-count').textContent = ''; return; }
     renderBoard();
     const pool = [...byKey.values()]
       .filter(p => (!pairBrand || p.brand === pairBrand) && passesIgnoringHue[p.brand](p.c))
       .map(p => ({ ...p, fromTarget: deltaE2000(target.lab, p.c.lab) }));
     $('schemes').replaceChildren(...Harmony.schemesFor(target.hex).map(s => schemeCard(s, suggest(s, pool))));
   }
+
+  // ---------- Phone layout ----------
+
+  function showView(view) {
+    document.body.dataset.view = view;
+    document.querySelectorAll('.tabbar button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+    store.set('view', view);
+  }
+  document.querySelectorAll('.tabbar button').forEach(b => b.addEventListener('click', () => {
+    if (document.body.dataset.view !== b.dataset.view) { showView(b.dataset.view); window.scrollTo(0, 0); }
+  }));
+  showView(store.get('view', 'match'));
+
+  function showBrand(brand) {
+    document.body.dataset.brand = brand;
+    document.querySelectorAll('.brand-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.brand === brand)));
+    store.set('mobileBrand', brand);
+  }
+  document.querySelectorAll('.brand-switch button').forEach(b => b.addEventListener('click', () => showBrand(b.dataset.brand)));
+  showBrand(store.get('mobileBrand', 'boss'));
 
   // ---------- Start ----------
 

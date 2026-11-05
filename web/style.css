@@ -411,3 +411,62 @@ a.pair-name:hover { text-decoration: underline; text-underline-offset: 3px; }
 .ring .slice-label { pointer-events: none; transition: opacity 160ms ease; }
 .board-legend li { transition: background-color 160ms ease; }
 .board-legend li.on { background: var(--booth); box-shadow: inset 0 0 0 1px var(--line); }
+
+/* ---------- Phone: one section at a time behind a bottom tab bar ---------- */
+.tabbar, .brand-switch { display: none; }
+@media (max-width: 720px) {
+  body { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
+  #hex-input, input, select { font-size: 16px; }
+
+  .tabbar {
+    display: flex; gap: 4px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: var(--panel); border-top: 1px solid var(--line);
+  }
+  .tabbar button {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border: 0; border-radius: 6px; background: none; padding: 7px 4px 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer;
+  }
+  .tabbar button[aria-pressed="true"] { background: var(--booth); color: var(--ink); }
+  .tabbar small { font-size: 11px; font-weight: 700; color: var(--ink); }
+  .tab-icon { width: 22px; height: 16px; border-radius: 3px; box-shadow: inset 0 0 0 1.5px currentColor; }
+  .tab-icon.i-match { background: linear-gradient(90deg, var(--target) 0 50%, transparent 50%); }
+  .tab-icon.i-pairings { width: 16px; border-radius: 50%; border: 4px solid currentColor; box-shadow: none; background: var(--target); }
+  .tab-icon.i-compare { background: repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 7px); box-shadow: none; }
+
+  body[data-view="pairings"] .layout, body[data-view="compare"] .layout,
+  body:not([data-view="pairings"]) #pairings, body:not([data-view="compare"]) #compare { display: none; }
+  .pairings, .compare { border-top: 0; }
+
+  .brand-switch { display: flex; padding: 3px; border-radius: 6px; background: var(--panel); }
+  .brand-switch button {
+    flex: 1; border: 0; border-radius: 4px; background: none; padding: 9px;
+    font-weight: 600; color: var(--muted); cursor: pointer;
+  }
+  .brand-switch button[aria-pressed="true"] { background: var(--ink); color: var(--booth); }
+  body[data-brand="boss"] #brand-levis, body[data-brand="levis"] #brand-boss { display: none; }
+
+  .stage:not(.has-image) { display: none; }
+  .target-chip { min-height: 96px; }
+  .target-meta strong { font-size: 28px; }
+  .compare-head { flex-direction: column; align-items: stretch; margin-top: 8px; }
+  .compare-head .picker { align-items: stretch; }
+  .combo { flex-basis: auto; }
+  .bar .paint-combo, .board-combo, .picker .combo { flex: 1 1 100%; }
+  .paint-combo input { width: 100%; }
+  #compare-options, .paint-options { max-height: 45vh; }
+  .deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card-face { min-height: 96px; }
+  .foot { padding-bottom: 24px; }
+}
+
+@media (pointer: coarse) {
+  .icon-btn { width: 40px; height: 40px; }
+  .scheme-strip .add { width: 34px; height: 34px; font-size: 18px; }
+  .card-remove { padding: 4px 8px; }
+  .link { padding-block: 6px; }
+  .chip { padding: 7px 12px; }
+  .history-list button { width: 40px; height: 40px; }
+}

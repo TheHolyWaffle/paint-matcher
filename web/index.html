@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#D6D6D4">
 <title>Paint Matcher</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,6 +71,11 @@
       <ol class="history-list" id="history"></ol>
     </div>
   </section>
+
+  <div class="brand-switch" role="group" aria-label="Brand to show">
+    <button type="button" data-brand="boss" aria-pressed="true">Boss Paints</button>
+    <button type="button" data-brand="levis" aria-pressed="false">Levis</button>
+  </div>
 
   <section class="brand" id="brand-boss" aria-labelledby="boss-title">
     <header class="brand-head">
@@ -190,6 +196,12 @@
   <p>LRV (light reflectance value) runs from 0 for black to 100 for white. Two paints about 20 or more apart in LRV read as a clear contrast, for example a wall and its trim.</p>
   <p>Differences are CIEDE2000 ΔE: below 1 is invisible, below 2 hard to see. Screen hex values are approximations, so check a tester pot in your own light before buying.</p>
 </footer>
+
+<nav class="tabbar" aria-label="Sections">
+  <button type="button" data-view="match" aria-pressed="true"><span class="tab-icon i-match"></span><span>Matches</span></button>
+  <button type="button" data-view="pairings" aria-pressed="false"><span class="tab-icon i-pairings"></span><span>Pairings <small id="tab-pairings-count"></small></span></button>
+  <button type="button" data-view="compare" aria-pressed="false"><span class="tab-icon i-compare"></span><span>Compare <small id="tab-compare-count"></small></span></button>
+</nav>
 
 <script src="colors.js"></script>
 <script src="color.js"></script>
