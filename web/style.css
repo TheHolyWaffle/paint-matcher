@@ -470,3 +470,56 @@ a.pair-name:hover { text-decoration: underline; text-underline-offset: 3px; }
   .chip { padding: 7px 12px; }
   .history-list button { width: 40px; height: 40px; }
 }
+
+/* ---------- Calibration dialog ---------- */
+.button.ghost { background: none; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); border: 0; font: inherit; font-weight: 600; }
+.button small { font-weight: 700; }
+.calibrate {
+  width: min(620px, calc(100vw - 32px)); max-height: calc(100dvh - 48px);
+  padding: 20px 22px 24px; border: 0; border-radius: 8px;
+  background: var(--booth); color: var(--ink);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.35);
+}
+.calibrate::backdrop { background: rgb(0 0 0 / 0.45); }
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cal-head h2 { margin: 0; font-size: 24px; font-weight: 800; font-stretch: 70%; }
+.calibrate > .hint { margin: 6px 0 14px; }
+.cal-combo { margin-bottom: 14px; }
+.cal-combo input { width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; color: var(--ink); }
+.cal-work[hidden] { display: none; }
+.cal-swatch {
+  position: relative; min-height: 220px; border-radius: 6px;
+  background: var(--paint); color: var(--paint-ink);
+  display: flex; align-items: flex-end; padding: 14px 16px;
+}
+.cal-label { display: flex; flex-direction: column; }
+.cal-label strong { font-size: 18px; font-weight: 700; font-stretch: 75%; }
+.cal-label span { font-size: 12.5px; opacity: 0.85; }
+.cal-orig {
+  position: absolute; top: 0; right: 0; width: 84px; height: 64px;
+  display: flex; align-items: flex-end; padding: 6px 8px;
+  background: var(--orig); color: var(--orig-ink);
+  font-size: 11.5px; font-weight: 600; border-radius: 0 6px 0 6px;
+}
+.cal-sliders { display: grid; gap: 10px; margin: 16px 0; }
+.cal-sliders label { display: grid; grid-template-columns: 76px minmax(0, 1fr) 76px; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.cal-sliders label span:last-child { text-align: right; }
+.cal-sliders input { width: 100%; accent-color: var(--ink); }
+.cal-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.cal-actions .button { border: 0; font: inherit; font-weight: 600; }
+.cal-saved { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 14px; }
+.cal-saved h3 { margin: 0 0 8px; font-size: 18px; font-weight: 700; font-stretch: 75%; }
+.cal-saved .hint[hidden] { display: none; }
+.cal-list { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cal-list li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 10px; background: var(--panel); border-radius: 4px; padding: 6px 8px; }
+.cal-pair {
+  width: 56px; height: 32px; border: 0; border-radius: 3px; padding: 0; cursor: pointer;
+  background: linear-gradient(90deg, var(--from) 0 50%, var(--to) 50%);
+}
+.cal-summary p { margin: 0 0 6px; font-size: 13.5px; }
+@media (max-width: 720px) {
+  .calibrate { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); }
+  .cal-swatch { min-height: 38dvh; }
+  .cal-sliders label { grid-template-columns: 64px minmax(0, 1fr) 64px; font-size: 12px; }
+  .cal-sliders input { height: 32px; }
+}

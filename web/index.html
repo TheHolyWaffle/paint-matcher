@@ -23,6 +23,7 @@
     </label>
     <label class="button" for="file-input">Open image…</label>
     <input type="file" id="file-input" accept="image/*" hidden>
+    <button type="button" class="button ghost" id="cal-open">Calibrate <small id="cal-badge"></small></button>
   </form>
   <div class="combo paint-combo">
     <input id="paint-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false"
@@ -196,6 +197,45 @@
   <p>LRV (light reflectance value) runs from 0 for black to 100 for white. Two paints about 20 or more apart in LRV read as a clear contrast, for example a wall and its trim.</p>
   <p>Differences are CIEDE2000 ΔE: below 1 is invisible, below 2 hard to see. Screen hex values are approximations, so check a tester pot in your own light before buying.</p>
 </footer>
+
+<dialog class="calibrate" id="calibrate" aria-labelledby="cal-title">
+  <div class="cal-head">
+    <h2 id="cal-title">Calibrate to your testers</h2>
+    <button type="button" class="icon-btn" id="cal-close" aria-label="Close">×</button>
+  </div>
+  <p class="hint">Screen colors from the catalogs can be far from the real paint. Hold a real tester or fan-deck chip flat against the screen, in daylight, with the screen at full brightness and Night Shift / True Tone off. Adjust until the swatch matches the tester, then save. After a few testers, every color of that brand is corrected.</p>
+  <div class="combo cal-combo">
+    <input id="cal-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false"
+           aria-controls="cal-options" aria-label="Paint you have a tester of" autocomplete="off" spellcheck="false"
+           placeholder="Paint you have a tester of: name or code">
+    <ul id="cal-options" class="paint-options" role="listbox" aria-label="Matching paints" hidden></ul>
+  </div>
+
+  <div class="cal-work" id="cal-work" hidden>
+    <div class="cal-swatch" id="cal-swatch">
+      <span class="cal-orig" id="cal-orig" title="The catalog color, uncorrected">Catalog</span>
+      <div class="cal-label"><strong id="cal-name"></strong><span id="cal-hex"></span></div>
+    </div>
+    <div class="cal-sliders">
+      <label><span>Darker</span><input type="range" id="cal-l" min="-25" max="25" step="0.5" value="0" aria-label="Lightness"><span>Lighter</span></label>
+      <label><span>Cooler</span><input type="range" id="cal-b" min="-15" max="15" step="0.5" value="0" aria-label="Warmth"><span>Warmer</span></label>
+      <label><span>Greener</span><input type="range" id="cal-a" min="-15" max="15" step="0.5" value="0" aria-label="Green to pink"><span>Pinker</span></label>
+      <label><span>Less color</span><input type="range" id="cal-c" min="0.4" max="1.6" step="0.02" value="1" aria-label="Colorfulness"><span>More color</span></label>
+    </div>
+    <div class="cal-actions">
+      <button type="button" class="button" id="cal-save">Save this tester</button>
+      <button type="button" class="link" id="cal-reset">Back to catalog color</button>
+    </div>
+  </div>
+
+  <div class="cal-saved">
+    <h3>Saved testers</h3>
+    <p class="hint" id="cal-none">None yet.</p>
+    <ol class="cal-list" id="cal-list"></ol>
+    <div class="cal-summary" id="cal-summary"></div>
+    <label class="toggle"><input type="checkbox" id="cal-enabled"> Show corrected colors everywhere</label>
+  </div>
+</dialog>
 
 <nav class="tabbar" aria-label="Sections">
   <button type="button" data-view="match" aria-pressed="true"><span class="tab-icon i-match"></span><span>Matches</span></button>

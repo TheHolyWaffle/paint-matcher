@@ -1,10 +1,13 @@
 (() => {
-  const { parseHex, rgbToHex, hexToLab, deltaE2000, relLuminance, oklchToHex } = window.ColorMath;
+  const { parseHex, rgbToHex, hexToLab, labToHex, deltaE2000, relLuminance, oklchToHex } = window.ColorMath;
   const DATA = window.PAINTS || { boss: [], levis: [], levisTypeOrder: [] };
   const $ = id => document.getElementById(id);
   const UNGROUPED = 'Zonder groep';
 
-  for (const c of [...DATA.boss, ...DATA.levis]) c.lab = hexToLab(c.hex);
+  for (const c of [...DATA.boss, ...DATA.levis]) {
+    c.catalogHex = c.hex;
+    c.catalogLab = c.lab = hexToLab(c.hex);
+  }
 
   const store = {
     get(key, fallback) {
@@ -271,10 +274,10 @@
       const li = document.createElement('li');
       const b = document.createElement('button');
       b.type = 'button';
-      b.style.setProperty('--c', h.hex);
+      b.style.setProperty('--c', h.paint && byKey.has(h.paint) ? byKey.get(h.paint).c.hex : h.hex);
       b.title = `${h.hex}: ${h.origin}`;
       b.setAttribute('aria-label', `Use ${h.hex}`);
-      b.addEventListener('click', () => setTarget(h.hex, h.origin, { remember: false, paint: h.paint }));
+      b.addEventListener('click', () => (h.paint && byKey.has(h.paint) ? usePaint(byKey.get(h.paint)) : setTarget(h.hex, h.origin, { remember: false })));
       li.append(b);
       return li;
     }));
@@ -1047,6 +1050,173 @@
     $('schemes').replaceChildren(...Harmony.schemesFor(target.hex).map(s => schemeCard(s, suggest(s, pool))));
   }
 
+  // ---------- Calibration ----------
+  // Testers held against this screen teach a per-brand correction from catalog Lab to what the paint really looks like.
+
+  let calibration = store.get('calibration', { enabled: true, samples: [] });
+  calibration.samples = calibration.samples.filter(smp => byKey.has(smp.key));
+  let models = {};
+  let calPaint = null;
+
+  const mean = xs => xs.reduce((a, b) => a + b, 0) / xs.length;
+
+  // Ridge regression pulls the fit toward "no change", so one or two testers mostly shift colors rather than stretch them.
+  function fitModel(samples) {
+    const LAMBDA_L = 400, LAMBDA_C = 300;
+    const L0 = samples.map(x => x.from[0]), L1 = samples.map(x => x.to[0]);
+    const mL0 = mean(L0), mL1 = mean(L1);
+    let sxy = 0, sxx = 0;
+    L0.forEach((x, i) => { sxy += (x - mL0) * (L1[i] - mL1); sxx += (x - mL0) ** 2; });
+    const alpha = (sxy + LAMBDA_L) / (sxx + LAMBDA_L);
+    const [ma0, mb0, ma1, mb1] = [1, 2].flatMap(k => [mean(samples.map(x => x.from[k]))])
+      .concat([1, 2].map(k => mean(samples.map(x => x.to[k]))));
+    let num = 0, den = 0;
+    for (const x of samples) {
+      const a0 = x.from[1] - ma0, b0 = x.from[2] - mb0, a1 = x.to[1] - ma1, b1 = x.to[2] - mb1;
+      num += a0 * a1 + b0 * b1;
+      den += a0 * a0 + b0 * b0;
+    }
+    const gamma = (num + LAMBDA_C) / (den + LAMBDA_C);
+    return { alpha, beta: mL1 - alpha * mL0, gamma, da: ma1 - gamma * ma0, db: mb1 - gamma * mb0, n: samples.length };
+  }
+
+  const applyModel = (m, [L, a, b]) => [Math.min(100, Math.max(0, m.alpha * L + m.beta)), m.gamma * a + m.da, m.gamma * b + m.db];
+
+  function applyCalibration() {
+    models = {};
+    const exact = new Map();
+    if (calibration.enabled) {
+      for (const brand of ['boss', 'levis']) {
+        const samples = calibration.samples.filter(x => x.brand === brand);
+        if (samples.length) models[brand] = fitModel(samples);
+      }
+      for (const x of calibration.samples) exact.set(x.key, x.to);
+    }
+    for (const p of byKey.values()) {
+      const lab = exact.get(p.key) || (models[p.brand] ? applyModel(models[p.brand], p.c.catalogLab) : null);
+      p.c.hex = lab ? labToHex(lab) : p.c.catalogHex;
+      p.c.lab = lab ? hexToLab(p.c.hex) : p.c.catalogLab;
+    }
+    const n = calibration.samples.length;
+    $('cal-badge').textContent = calibration.enabled && n ? '✓' : '';
+  }
+
+  function saveCalibration() {
+    store.set('calibration', calibration);
+    applyCalibration();
+    renderCalibration();
+    if (target?.paint && byKey.has(target.paint)) {
+      setTarget(byKey.get(target.paint).c.hex, target.origin, { remember: false, paint: target.paint });
+    } else {
+      renderResults();
+      renderPairings();
+      renderCompare();
+    }
+  }
+
+  function describeModel(m) {
+    const parts = [];
+    const dL = applyModel(m, [60, 0, 0])[0] - 60;
+    if (Math.abs(dL) >= 1.5) parts.push(dL > 0 ? 'lighter' : 'darker');
+    if (m.db >= 1.5) parts.push('warmer'); else if (m.db <= -1.5) parts.push('cooler');
+    if (m.da >= 1.5) parts.push('pinker'); else if (m.da <= -1.5) parts.push('greener');
+    if (m.gamma >= 1.06) parts.push(`${Math.round((m.gamma - 1) * 100)}% more colorful`);
+    else if (m.gamma <= 0.94) parts.push(`${Math.round((1 - m.gamma) * 100)}% less colorful`);
+    return parts.length ? `shown ${parts.join(', ')} than the catalog` : 'barely changed from the catalog';
+  }
+
+  const sliders = { l: $('cal-l'), a: $('cal-a'), b: $('cal-b'), c: $('cal-c') };
+  const sliderValues = () => Object.fromEntries(Object.entries(sliders).map(([k, el]) => [k, Number(el.value)]));
+
+  function adjusted([L, a, b], v) {
+    return [Math.min(100, Math.max(0, L + v.l)), a * v.c + v.a, b * v.c + v.b];
+  }
+
+  function setSliders(v) {
+    for (const [k, el] of Object.entries(sliders)) el.value = String(v[k]);
+  }
+
+  // Start from the saved answer, else from what the brand model already predicts for this paint.
+  function startingSliders(p) {
+    const saved = calibration.samples.find(x => x.key === p.key);
+    const [L, a, b] = p.c.catalogLab;
+    const to = saved?.to || (calibration.enabled && models[p.brand] ? applyModel(models[p.brand], p.c.catalogLab) : null);
+    if (!to) return { l: 0, a: 0, b: 0, c: 1 };
+    const m = saved ? null : models[p.brand];
+    const c = m ? m.gamma : 1;
+    return { l: to[0] - L, c, a: m ? m.da : to[1] - a, b: m ? m.db : to[2] - b };
+  }
+
+  function renderCalSwatch() {
+    if (!calPaint) return;
+    const lab = adjusted(calPaint.c.catalogLab, sliderValues());
+    const hex = labToHex(lab);
+    $('cal-swatch').style.setProperty('--paint', hex);
+    $('cal-swatch').style.setProperty('--paint-ink', inkFor(hex));
+    $('cal-orig').style.setProperty('--orig', calPaint.c.catalogHex);
+    $('cal-orig').style.setProperty('--orig-ink', inkFor(calPaint.c.catalogHex));
+    $('cal-name').textContent = `${BRAND_LABEL[calPaint.brand]} ${calPaint.label}`;
+    $('cal-hex').textContent = hex === calPaint.c.catalogHex ? `${hex} (catalog)` : `${hex} (catalog ${calPaint.c.catalogHex})`;
+  }
+
+  function pickCalPaint(p) {
+    calPaint = p;
+    $('cal-work').hidden = false;
+    setSliders(startingSliders(p));
+    renderCalSwatch();
+    $('cal-save').textContent = calibration.samples.some(x => x.key === p.key) ? 'Update this tester' : 'Save this tester';
+  }
+
+  function renderCalibration() {
+    const list = calibration.samples;
+    $('cal-none').hidden = list.length > 0;
+    $('cal-enabled').checked = calibration.enabled;
+    $('cal-list').replaceChildren(...list.map(x => {
+      const p = byKey.get(x.key);
+      const li = document.createElement('li');
+      const pair = document.createElement('button');
+      pair.type = 'button';
+      pair.className = 'cal-pair';
+      pair.title = 'Adjust again';
+      pair.style.setProperty('--from', p.c.catalogHex);
+      pair.style.setProperty('--to', labToHex(x.to));
+      pair.setAttribute('aria-label', `Adjust ${p.label} again`);
+      pair.addEventListener('click', () => pickCalPaint(p));
+      const text = document.createElement('div');
+      text.className = 'legend-text';
+      const name = document.createElement('strong');
+      name.textContent = p.label;
+      const sub = document.createElement('span');
+      sub.textContent = `${BRAND_LABEL[p.brand]} · catalog ${p.c.catalogHex} → ${labToHex(x.to)} · ΔE ${deltaE2000(x.from, x.to).toFixed(1)}`;
+      text.append(name, sub);
+      li.append(pair, text, iconButton('×', `Remove ${p.label} tester`, () => {
+        calibration.samples = calibration.samples.filter(y => y.key !== x.key);
+        saveCalibration();
+      }));
+      return li;
+    }));
+    $('cal-summary').replaceChildren(...Object.entries(models).map(([brand, m]) => {
+      const p = document.createElement('p');
+      p.innerHTML = `<b>${BRAND_LABEL[brand]}</b>: ${m.n} tester${m.n === 1 ? '' : 's'}, colors ${describeModel(m)}.`;
+      return p;
+    }));
+  }
+
+  for (const el of Object.values(sliders)) el.addEventListener('input', renderCalSwatch);
+  $('cal-reset').addEventListener('click', () => { setSliders({ l: 0, a: 0, b: 0, c: 1 }); renderCalSwatch(); });
+  $('cal-save').addEventListener('click', () => {
+    if (!calPaint) return;
+    const sample = { key: calPaint.key, brand: calPaint.brand, from: calPaint.c.catalogLab, to: adjusted(calPaint.c.catalogLab, sliderValues()) };
+    calibration.samples = [...calibration.samples.filter(x => x.key !== calPaint.key), sample];
+    saveCalibration();
+    $('cal-save').textContent = 'Saved ✓';
+  });
+  $('cal-enabled').addEventListener('change', e => { calibration.enabled = e.target.checked; saveCalibration(); });
+  $('cal-open').addEventListener('click', () => { renderCalibration(); $('calibrate').showModal(); });
+  $('cal-close').addEventListener('click', () => $('calibrate').close());
+  $('calibrate').addEventListener('click', e => { if (e.target === $('calibrate')) $('calibrate').close(); });
+  paintCombo({ input: $('cal-search'), listbox: $('cal-options'), onChoose: pickCalPaint });
+
   // ---------- Phone layout ----------
 
   function showView(view) {
@@ -1069,6 +1239,7 @@
 
   // ---------- Start ----------
 
+  applyCalibration();
   buildFilterUI();
   onFiltersChanged();
   renderHistory();
@@ -1077,6 +1248,7 @@
   const fromHex = parseHex(hash);
   if (byKey.has(hash)) usePaint(byKey.get(hash));
   else if (fromHex) setTarget(fromHex, 'From the link', { remember: false });
-  else if (recent[0]) setTarget(recent[0].hex, recent[0].origin, { remember: false, paint: recent[0].paint });
+  else if (recent[0]?.paint && byKey.has(recent[0].paint)) usePaint(byKey.get(recent[0].paint));
+  else if (recent[0]) setTarget(recent[0].hex, recent[0].origin, { remember: false });
   else renderResults();
 })();

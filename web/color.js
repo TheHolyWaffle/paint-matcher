@@ -102,5 +102,17 @@ window.ColorMath = (() => {
     return rgbToHex(rgb);
   }
 
-  return { parseHex, hexToRgb, rgbToHex, hexToLab, deltaE2000, relLuminance, hexToOklch, oklchToHex };
+  function labToHex([L, a, b]) {
+    const finv = t => (t ** 3 > 0.008856 ? t ** 3 : (t - 16 / 116) / 7.787);
+    const fy = (L + 16) / 116;
+    const X = finv(fy + a / 500) * 0.95047, Y = finv(fy), Z = finv(fy - b / 200) * 1.08883;
+    const rgb = [
+      3.2404542 * X - 1.5371385 * Y - 0.4985314 * Z,
+      -0.969266 * X + 1.8760108 * Y + 0.041556 * Z,
+      0.0556434 * X - 0.2040259 * Y + 1.0572252 * Z,
+    ];
+    return rgbToHex(rgb.map(v => 255 * gam(Math.min(1, Math.max(0, v)))));
+  }
+
+  return { parseHex, hexToRgb, rgbToHex, hexToLab, labToHex, deltaE2000, relLuminance, hexToOklch, oklchToHex };
 })();
