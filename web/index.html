@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paint Matcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <h1>Paint Matcher</h1>
+  <form class="target-form" id="target-form" autocomplete="off">
+    <label class="field">
+      <span>Hex</span>
+      <input id="hex-input" name="hex" spellcheck="false" maxlength="7" placeholder="#f2e2d2">
+    </label>
+    <label class="swatch-picker" title="Choose a color">
+      <input type="color" id="color-input" aria-label="Choose a color">
+    </label>
+    <label class="button" for="file-input">Open image…</label>
+    <input type="file" id="file-input" accept="image/*" hidden>
+  </form>
+  <div class="combo paint-combo">
+    <input id="paint-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false"
+           aria-controls="paint-options" aria-label="Start from a paint" autocomplete="off" spellcheck="false"
+           placeholder="Or start from a paint: name or code">
+    <ul id="paint-options" class="paint-options" role="listbox" aria-label="Matching paints" hidden></ul>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="source" aria-label="Color source">
+    <div class="target-chip" id="target-chip">
+      <div class="target-fill"></div>
+      <div class="target-meta">
+        <strong id="target-hex">—</strong>
+        <span id="target-origin">Type a hex code, choose a color, search for a paint, or open an image.</span>
+      </div>
+    </div>
+
+    <div class="stage" id="stage" tabindex="0" aria-label="Image: click a pixel to pick its color">
+      <div class="stage-empty" id="stage-empty">
+        <p>Drop a photo here, paste one, or use <em>Open image…</em></p>
+        <p class="hint">Then click the spot whose color you want to match.</p>
+      </div>
+      <canvas id="view"></canvas>
+      <canvas id="loupe" width="132" height="132" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="stage-tools" id="stage-tools" hidden>
+      <label class="field inline">
+        <span>Sample</span>
+        <select id="sample-size">
+          <option value="1">1 px</option>
+          <option value="3">3 × 3 px</option>
+          <option value="5" selected>5 × 5 px</option>
+          <option value="9">9 × 9 px</option>
+          <option value="15">15 × 15 px</option>
+        </select>
+      </label>
+      <span class="hint">Averaging a small area smooths out photo noise.</span>
+      <button type="button" class="link" id="clear-image">Remove image</button>
+    </div>
+
+    <div class="history" id="history-wrap" hidden>
+      <h2>Recent picks</h2>
+      <ol class="history-list" id="history"></ol>
+    </div>
+  </section>
+
+  <section class="brand" id="brand-boss" aria-labelledby="boss-title">
+    <header class="brand-head">
+      <h2 id="boss-title">Boss Paints</h2>
+      <span class="count" id="boss-count"></span>
+    </header>
+    <details class="filters" id="boss-filters">
+      <summary>Filters <span class="active-filters" id="boss-active"></span></summary>
+      <fieldset><legend>Color group</legend><div class="chips" id="boss-groups"></div></fieldset>
+      <fieldset><legend>Color system</legend><div class="chips" id="boss-systems"></div></fieldset>
+      <label class="toggle"><input type="checkbox" id="boss-trending"> Only trending colors</label>
+      <fieldset><legend>Use</legend><div class="chips" id="boss-types"></div></fieldset>
+      <fieldset class="products">
+        <legend>Mixable in product</legend>
+        <input type="search" id="boss-product-search" placeholder="Filter products">
+        <div class="product-list" id="boss-products"></div>
+      </fieldset>
+      <button type="button" class="link" data-reset="boss">Clear filters</button>
+    </details>
+    <ol class="results" id="boss-results"></ol>
+  </section>
+
+  <section class="brand" id="brand-levis" aria-labelledby="levis-title">
+    <header class="brand-head">
+      <h2 id="levis-title">Levis</h2>
+      <span class="count" id="levis-count"></span>
+    </header>
+    <details class="filters" id="levis-filters">
+      <summary>Filters <span class="active-filters" id="levis-active"></span></summary>
+      <fieldset><legend>Use</legend><div class="chips" id="levis-types"></div></fieldset>
+      <fieldset><legend>Collection</legend><div class="chips" id="levis-collections"></div></fieldset>
+      <fieldset><legend>Hue family</legend><div class="chips" id="levis-hues"></div></fieldset>
+      <fieldset class="products">
+        <legend>Sold in product</legend>
+        <input type="search" id="levis-product-search" placeholder="Filter products">
+        <div class="product-list" id="levis-products"></div>
+      </fieldset>
+      <button type="button" class="link" data-reset="levis">Clear filters</button>
+    </details>
+    <ol class="results" id="levis-results"></ol>
+  </section>
+</main>
+
+<section class="pairings" id="pairings" aria-labelledby="pairings-title">
+  <header class="compare-head">
+    <h2 id="pairings-title">Pairings</h2>
+    <div class="picker">
+      <label class="field inline">
+        <span>Suggest from</span>
+        <select id="pair-brand">
+          <option value="">Both brands</option>
+          <option value="boss">Boss Paints</option>
+          <option value="levis">Levis</option>
+        </select>
+      </label>
+      <span class="hint">Uses your brand filters, except color group and hue family.</span>
+    </div>
+  </header>
+
+  <div class="board-wrap" id="board-wrap">
+    <div class="board-head">
+      <h3>Your palette</h3>
+      <div class="combo board-combo">
+        <input id="board-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false"
+               aria-controls="board-options" aria-label="Add a paint to your palette" autocomplete="off" spellcheck="false"
+               placeholder="Add any paint: name, code or hex">
+        <ul id="board-options" class="paint-options" role="listbox" aria-label="Matching paints" hidden></ul>
+      </div>
+      <button type="button" class="link" id="board-clear">Remove all</button>
+    </div>
+    <div class="board-body">
+      <svg class="ring" id="board-ring" viewBox="0 0 440 440" role="img" aria-labelledby="board-ring-title"><title id="board-ring-title">Your color surrounded by your palette</title></svg>
+      <div class="board-side">
+        <p class="hint board-hint" id="board-hint">Search above, click <b>+</b> on a suggestion below, or use <i>Add to palette</i> in Compare. Every paint you add touches your color in the middle.</p>
+        <ol class="board-legend" id="board-legend"></ol>
+      </div>
+    </div>
+  </div>
+
+  <p class="empty" id="pairings-empty">Pick a color to get pairing suggestions.</p>
+  <div class="schemes" id="schemes"></div>
+</section>
+
+<section class="compare" id="compare" aria-labelledby="compare-title">
+  <header class="compare-head">
+    <h2 id="compare-title">Compare paints</h2>
+    <div class="picker">
+      <select id="compare-brand" aria-label="Brand to search">
+        <option value="">Both brands</option>
+        <option value="boss">Boss Paints</option>
+        <option value="levis">Levis</option>
+      </select>
+      <div class="combo">
+        <input id="compare-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false"
+               aria-controls="compare-options" autocomplete="off" spellcheck="false"
+               placeholder="Add a paint: name, code or hex">
+        <ul id="compare-options" role="listbox" aria-label="Matching paints" hidden></ul>
+      </div>
+      <button type="button" class="link" id="compare-add-target">Add closest to target</button>
+      <button type="button" class="link" id="compare-clear">Remove all</button>
+    </div>
+  </header>
+  <p class="empty" id="compare-empty">Search above to line up paints from either brand side by side. Typing a hex lists the closest paints first.</p>
+  <ol class="deck" id="compare-deck"></ol>
+  <div class="matrix-wrap" id="compare-matrix-wrap" hidden>
+    <table class="matrix" id="compare-matrix"></table>
+  </div>
+</section>
+
+<footer class="foot">
+  <label class="field inline">
+    <span>Show</span>
+    <select id="limit">
+      <option>8</option><option selected>12</option><option>24</option><option>50</option>
+    </select>
+    <span>matches per brand</span>
+  </label>
+  <p>LRV (light reflectance value) runs from 0 for black to 100 for white. Two paints about 20 or more apart in LRV read as a clear contrast, for example a wall and its trim.</p>
+  <p>Differences are CIEDE2000 ΔE: below 1 is invisible, below 2 hard to see. Screen hex values are approximations, so check a tester pot in your own light before buying.</p>
+</footer>
+
+<script src="colors.js"></script>
+<script src="color.js"></script>
+<script src="harmony.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

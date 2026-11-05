@@ -1,0 +1,457 @@
+[
+{
+"id": "2097",
+"name": "Bossprim",
+"category": "Grondlagen muur",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "2114",
+"name": "Bossflow Mat",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "2124",
+"name": "Boss-hybride",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5963
+},
+{
+"id": "2000",
+"name": "Elastoprim Fast",
+"category": "Grondlagen roestwerend",
+"type": "PAINT_TINTED",
+"colors": 5700
+},
+{
+"id": "30017",
+"name": "Persisto PU Satin",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5807
+},
+{
+"id": "1878",
+"name": "Claystuc",
+"category": "Professionele decotechnieken",
+"type": "PAINT_TINTED",
+"colors": 177
+},
+{
+"id": "30444",
+"name": "Stone Art",
+"category": "Diverse decotechnieken",
+"type": "PAINT_TINTED",
+"colors": 125
+},
+{
+"id": "2153",
+"name": "Limestone",
+"category": "Diverse decotechnieken",
+"type": "PAINT_TINTED",
+"colors": 3601
+},
+{
+"id": "749",
+"name": "Satineau",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "986",
+"name": "Pastime",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 5822
+},
+{
+"id": "2138",
+"name": "Sol-Silicat Mur",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 499
+},
+{
+"id": "30489",
+"name": "Xilox-one Ultramat",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 5815
+},
+{
+"id": "957",
+"name": "Bisol",
+"category": "Grondlagen muur",
+"type": "PAINT_TINTED",
+"colors": 2435
+},
+{
+"id": "859",
+"name": "Airless Omnicryl",
+"category": "Spuitverven",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "5",
+"name": "Bolatex",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "282",
+"name": "Arcade",
+"category": "Diverse decotechnieken",
+"type": "PAINT_TINTED",
+"colors": 5821
+},
+{
+"id": "1996",
+"name": "Elastogloss",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5962
+},
+{
+"id": "1984",
+"name": "Woodair Classic",
+"category": "Houtveredeling buiten",
+"type": "PAINT_TINTED",
+"colors": 5642
+},
+{
+"id": "1554",
+"name": "Hybride Multiprimer Pu",
+"category": "Grondlagen diverse",
+"type": "PAINT_TINTED",
+"colors": 5810
+},
+{
+"id": "1327",
+"name": "Epofloor",
+"category": "Vloerverven",
+"type": "PAINT_TINTED",
+"colors": 4138
+},
+{
+"id": "773",
+"name": "Calime",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 34
+},
+{
+"id": "542",
+"name": "Beau",
+"category": "Diverse decotechnieken",
+"type": "PAINT_TINTED",
+"colors": 5802
+},
+{
+"id": "453",
+"name": "Elastoprim Hydro",
+"category": "Grondlagen hout",
+"type": "PAINT_TINTED",
+"colors": 5816
+},
+{
+"id": "415",
+"name": "Chalkboard Paint",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 2076
+},
+{
+"id": "30033",
+"name": "Multiprim Spray",
+"category": "Grondlagen diverse",
+"type": "PAINT_TINTED",
+"colors": 5815
+},
+{
+"id": "1998",
+"name": "Elastosatin One",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5962
+},
+{
+"id": "1985",
+"name": "Woodair Hydro",
+"category": "Houtveredeling buiten",
+"type": "PAINT_TINTED",
+"colors": 5729
+},
+{
+"id": "1959",
+"name": "Prime Colorlook",
+"category": "Houtveredeling en vernissen binnen",
+"type": "PAINT_TINTED",
+"colors": 5690
+},
+{
+"id": "115",
+"name": "Finifer",
+"category": "Grondlagen roestwerend",
+"type": "PAINT_TINTED",
+"colors": 5962
+},
+{
+"id": "433",
+"name": "Coating M30",
+"category": "Grondlagen muur",
+"type": "PAINT_TINTED",
+"colors": 3948
+},
+{
+"id": "2115",
+"name": "Bossflow Satin",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5815
+},
+{
+"id": "1999",
+"name": "Elastoprim Next",
+"category": "Grondlagen hout",
+"type": "PAINT_TINTED",
+"colors": 5962
+},
+{
+"id": "1997",
+"name": "Elastosatin Xs",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5701
+},
+{
+"id": "1983",
+"name": "Prime Colorstain",
+"category": "Houtveredeling en vernissen binnen",
+"type": "PAINT_TINTED",
+"colors": 5672
+},
+{
+"id": "1555",
+"name": "Omniprim Extreme",
+"category": "Grondlagen diverse",
+"type": "PAINT_TINTED",
+"colors": 2481
+},
+{
+"id": "1176",
+"name": "Durosatin",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5708
+},
+{
+"id": "1084",
+"name": "Aqua Sensa Binder",
+"category": "Professionele decotechnieken",
+"type": "PAINT_TINTED",
+"colors": 31
+},
+{
+"id": "510",
+"name": "Quartz Coat",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 2480
+},
+{
+"id": "2116",
+"name": "Bossflow Silk",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5963
+},
+{
+"id": "1987",
+"name": "Woodcolor Classic",
+"category": "Houtveredeling buiten",
+"type": "PAINT_TINTED",
+"colors": 5987
+},
+{
+"id": "1391",
+"name": "Premium Multiprimer Xs",
+"category": "Grondlagen diverse",
+"type": "PAINT_TINTED",
+"colors": 5962
+},
+{
+"id": "9842",
+"name": "Epomur",
+"category": "Grondlagen muur",
+"type": "PAINT_TINTED",
+"colors": 2493
+},
+{
+"id": "30018",
+"name": "Hybride PU Mat",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5963
+},
+{
+"id": "2117",
+"name": "Bossfull Mat",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "1988",
+"name": "Woodcolor Hydro",
+"category": "Houtveredeling buiten",
+"type": "PAINT_TINTED",
+"colors": 5803
+},
+{
+"id": "1355",
+"name": "Matineau",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "30019",
+"name": "Hybride PU Satin",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5963
+},
+{
+"id": "2241",
+"name": "Matineau Spray",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5815
+},
+{
+"id": "2118",
+"name": "Bossfull Silk",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "394",
+"name": "Prolastica",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 2483
+},
+{
+"id": "30015",
+"name": "Hydro One Satin",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 3393
+},
+{
+"id": "30639",
+"name": "Hydro One",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5963
+},
+{
+"id": "30028",
+"name": "Persisto 2K Mat",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5810
+},
+{
+"id": "2151",
+"name": "Calco Binder",
+"category": "Professionele decotechnieken",
+"type": "PAINT_TINTED",
+"colors": 58
+},
+{
+"id": "2119",
+"name": "Boss-one Mat",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "1986",
+"name": "Woodoil Classic",
+"category": "Houtveredeling buiten",
+"type": "PAINT_TINTED",
+"colors": 5685
+},
+{
+"id": "462",
+"name": "Primer P77",
+"category": "Grondlagen muur",
+"type": "PAINT_TINTED",
+"colors": 2432
+},
+{
+"id": "30030",
+"name": "Persisto 2K Satin",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5806
+},
+{
+"id": "2242",
+"name": "Satineau Spray",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5815
+},
+{
+"id": "2120",
+"name": "Boss-one Silk",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "1485",
+"name": "Sublifill",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 5816
+},
+{
+"id": "47",
+"name": "Sublimat",
+"category": "Muurverf buiten",
+"type": "PAINT_TINTED",
+"colors": 5964
+},
+{
+"id": "30438",
+"name": "SB Xtra Gloss",
+"category": "Lakken buiten",
+"type": "PAINT_TINTED",
+"colors": 5699
+},
+{
+"id": "30055",
+"name": "Boss-plafond Mat",
+"category": "Muurverf binnen",
+"type": "PAINT_TINTED",
+"colors": 2593
+},
+{
+"id": "30016",
+"name": "Persisto PU Mat",
+"category": "Lakken binnen",
+"type": "PAINT_TINTED",
+"colors": 5807
+}
+]
